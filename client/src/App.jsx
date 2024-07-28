@@ -4,7 +4,7 @@ import "./App.css";
 import Input from "./components/Input";
 import RetrieveResume from "./components/RetrieveResume";
 
-function App() {
+const App = () => {
   const [resumeDetails, setResumeDetails] = useState({
     name: "",
     job_title: "",

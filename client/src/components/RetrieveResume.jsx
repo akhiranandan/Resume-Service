@@ -1,7 +1,7 @@
 // RetrieveResume.js
 import React from "react";
 
-function RetrieveResume({
+const RetrieveResume = ({
   resumeId,
   setResumeId,
   searchName,
@@ -10,7 +10,7 @@ function RetrieveResume({
   retrievedResumesByName,
   handleSearchById,
   handleSearchByName,
-}) {
+}) => {
   const inputFields = [
     {
       label: "Resume ID:",
