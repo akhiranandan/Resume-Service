@@ -12,10 +12,7 @@ const App = () => {
     job_company: "",
   });
   const [displayId, setDisplayId] = useState("");
-  const [resumeId, setResumeId] = useState("");
-  const [searchName, setSearchName] = useState("");
-  const [retrievedResumeById, setRetrievedResumeById] = useState(null);
-  const [retrievedResumesByName, setRetrievedResumesByName] = useState([]);
+  
 
   const fields = [
     { name: "name", label: "Name", isRequired: true },
@@ -41,32 +38,6 @@ const App = () => {
     }
   };
 
-  const handleSearchById = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/api/getResumeById/${resumeId}`
-      );
-      setRetrievedResumeById(response.data);
-      setRetrievedResumesByName([]); 
-    } catch (error) {
-      console.error("Error retrieving resume:", error);
-    }
-  };
-
-  const handleSearchByName = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/api/getResumeByName/${encodeURIComponent(searchName)}`
-      );
-      setRetrievedResumesByName(response.data);
-      setRetrievedResumeById(null);
-    } catch (error) {
-      console.error("Error retrieving resumes:", error);
-    }
-  };
-
   return (
     <div>
       <h1>Upload Resume</h1>
@@ -85,16 +56,8 @@ const App = () => {
 
       {displayId && <p>Your Resume ID is: {displayId}</p>}
 
-      <RetrieveResume
-        resumeId={resumeId}
-        setResumeId={setResumeId}
-        searchName={searchName}
-        setSearchName={setSearchName}
-        retrievedResumeById={retrievedResumeById}
-        retrievedResumesByName={retrievedResumesByName}
-        handleSearchById={handleSearchById}
-        handleSearchByName={handleSearchByName}
-      />
+      <RetrieveResume/>
+      
     </div>
   );
 }

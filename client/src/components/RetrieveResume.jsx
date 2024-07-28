@@ -1,16 +1,39 @@
 // RetrieveResume.js
-import React from "react";
+import React, {useState} from "react";
+import axios from "axios";
 
-const RetrieveResume = ({
-  resumeId,
-  setResumeId,
-  searchName,
-  setSearchName,
-  retrievedResumeById,
-  retrievedResumesByName,
-  handleSearchById,
-  handleSearchByName,
-}) => {
+const RetrieveResume = () => {
+
+  const [resumeId, setResumeId] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [retrievedResumeById, setRetrievedResumeById] = useState(null);
+  const [retrievedResumesByName, setRetrievedResumesByName] = useState([]);
+  const handleSearchById = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/getResumeById/${resumeId}`
+      );
+      setRetrievedResumeById(response.data);
+      setRetrievedResumesByName([]); 
+    } catch (error) {
+      console.error("Error retrieving resume:", error);
+    }
+  };
+
+  const handleSearchByName = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/getResumeByName/${encodeURIComponent(searchName)}`
+      );
+      setRetrievedResumesByName(response.data);
+      setRetrievedResumeById(null);
+    } catch (error) {
+      console.error("Error retrieving resumes:", error);
+    }
+  };
+
   const inputFields = [
     {
       label: "Resume ID:",
@@ -27,7 +50,6 @@ const RetrieveResume = ({
       submit: "Retrieve Resume Details",
     },
   ];
-
   return (
     <div>
       <h1>Retrieve Resume</h1>
