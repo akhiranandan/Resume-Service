@@ -1,4 +1,3 @@
-// RetrieveResume.js
 import React, {useState} from "react";
 import axios from "axios";
 
@@ -8,6 +7,7 @@ const RetrieveResume = () => {
   const [searchName, setSearchName] = useState("");
   const [retrievedResumeById, setRetrievedResumeById] = useState(null);
   const [retrievedResumesByName, setRetrievedResumesByName] = useState([]);
+
   const handleSearchById = async (e) => {
     e.preventDefault();
     try {

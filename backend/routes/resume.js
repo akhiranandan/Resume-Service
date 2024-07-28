@@ -49,7 +49,7 @@ router.get('/getResumeByName/:name', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT * FROM resumes WHERE first_name = $1 OR last_name = $2',
+      'SELECT * FROM resumes WHERE first_name ILIKE $1 OR last_name ILIKE $2',
       [first_name, last_name]
     );
 

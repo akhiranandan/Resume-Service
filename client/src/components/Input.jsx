@@ -1,4 +1,3 @@
-
 const Input = ({ label, value, name, handleChange }) => {
   return (
     <div>
