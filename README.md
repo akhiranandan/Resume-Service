@@ -63,7 +63,7 @@ The backend server will start on http://localhost:8080.
 
 ```
 cd ..
-cd backend
+cd client
 ```
 
 7. Install dependencies:
