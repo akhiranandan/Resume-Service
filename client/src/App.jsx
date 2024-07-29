@@ -5,14 +5,16 @@ import Input from "./components/Input";
 import RetrieveResume from "./components/RetrieveResume";
 
 const App = () => {
-  const [resumeDetails, setResumeDetails] = useState({
+  const initialResumeDetails = {
     name: "",
     job_title: "",
     job_description: "",
     job_company: "",
-  });
+  };
+
+  const [resumeDetails, setResumeDetails] = useState(initialResumeDetails);
   const [displayId, setDisplayId] = useState("");
-  
+  const [error, setError] = useState("");
 
   const fields = [
     { name: "name", label: "Name", isRequired: true },
@@ -37,9 +39,16 @@ const App = () => {
         resumeDetails
       );
       setDisplayId(response.data.resume_id);
+      setError("");
     } catch (error) {
-      console.error("Error uploading resume:", error);
+      setError("Error uploading resume: " + error.message);
     }
+  };
+
+  const handleClear = () => {
+    setResumeDetails(initialResumeDetails);
+    setDisplayId("");
+    setError("");
   };
 
   return (
@@ -56,8 +65,10 @@ const App = () => {
           />
         ))}
         <button type="submit">Submit</button>
+        <button type="button" onClick={handleClear}>Clear</button>
       </form>
 
+      {error && <p className="error">{error}</p>}
       {displayId && <p>Your Resume ID is: {displayId}</p>}
 
       <RetrieveResume/>
