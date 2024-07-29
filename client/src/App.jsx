@@ -27,6 +27,10 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!resumeDetails.name || !resumeDetails.job_title || !resumeDetails.job_description || !resumeDetails.job_company) {
+      alert("Please fill all the required fields.");
+      return;
+    }
     try {
       const response = await axios.post(
         "http://localhost:8080/api/uploadResumeDetails",
@@ -57,7 +61,7 @@ const App = () => {
       {displayId && <p>Your Resume ID is: {displayId}</p>}
 
       <RetrieveResume/>
-      
+
     </div>
   );
 }
