@@ -5,11 +5,9 @@ const RetrieveResume = () => {
   const [resumeId, setResumeId] = useState("");
   const [searchName, setSearchName] = useState("");
   const [retrievedResumes, setRetrievedResumes] = useState([]);
-  const [queryType, setQueryType] = useState("");
 
   const handleSearchById = async (e) => {
     e.preventDefault();
-    setQueryType("id");
     try {
       const response = await axios.get(
         `http://localhost:8080/api/getResumeById/${resumeId}`
@@ -22,7 +20,6 @@ const RetrieveResume = () => {
 
   const handleSearchByName = async (e) => {
     e.preventDefault();
-    setQueryType("name");
     try {
       const response = await axios.get(
         `http://localhost:8080/api/getResumeByName/${encodeURIComponent(searchName)}`
