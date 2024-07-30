@@ -77,3 +77,33 @@ npm install
 ```
 npm run dev
 ```
+
+
+## State Management
+
+### State Variables: 
+
+- resumeDetails: An object that holds the input values for the resume details form. It has the following properties:
+name: The name of the candidate.
+job_title: The job title of the candidate.
+job_description: The job description.
+job_company: The company where the candidate works.
+
+- displayId: The ID of the resume after it has been successfully uploaded.
+
+- resumeId: The ID used to retrieve a specific resume.
+
+- searchName: The name used to search for resumes.
+
+- retrievedResume: An object that holds the details of a retrieved resume by ID or name.
+
+### Functions: 
+
+- handleChange: Updates the resumeDetails state when the input values change.
+
+- handleSubmit: Submits the form to upload resume details and sets the displayId state with the returned resume ID.
+
+- handleSearchById: Fetches a resume by ID and updates the retrievedResume state.
+
+- handleSearchByName: Fetches resumes by name and updates the retrievedResume state.
+
