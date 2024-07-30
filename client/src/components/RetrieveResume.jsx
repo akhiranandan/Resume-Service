@@ -1,21 +1,20 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const RetrieveResume = () => {
-
   const [resumeId, setResumeId] = useState("");
   const [searchName, setSearchName] = useState("");
-  const [retrievedResumeById, setRetrievedResumeById] = useState(null);
-  const [retrievedResumesByName, setRetrievedResumesByName] = useState([]);
+  const [retrievedResumes, setRetrievedResumes] = useState([]);
+  const [queryType, setQueryType] = useState("");
 
   const handleSearchById = async (e) => {
     e.preventDefault();
+    setQueryType("id");
     try {
       const response = await axios.get(
         `http://localhost:8080/api/getResumeById/${resumeId}`
       );
-      setRetrievedResumeById(response.data);
-      setRetrievedResumesByName([]); 
+      setRetrievedResumes([response.data]);
     } catch (error) {
       console.error("Error retrieving resume:", error);
     }
@@ -23,12 +22,12 @@ const RetrieveResume = () => {
 
   const handleSearchByName = async (e) => {
     e.preventDefault();
+    setQueryType("name");
     try {
       const response = await axios.get(
         `http://localhost:8080/api/getResumeByName/${encodeURIComponent(searchName)}`
       );
-      setRetrievedResumesByName(response.data);
-      setRetrievedResumeById(null);
+      setRetrievedResumes(response.data);
     } catch (error) {
       console.error("Error retrieving resumes:", error);
     }
@@ -50,6 +49,7 @@ const RetrieveResume = () => {
       submit: "Retrieve Resume Details",
     },
   ];
+
   return (
     <div>
       <h1>Retrieve Resume</h1>
@@ -72,22 +72,10 @@ const RetrieveResume = () => {
         ))}
       </div>
 
-      {retrievedResumeById && (
+      {retrievedResumes.length > 0 && (
         <div>
           <h2>Resume Details</h2>
-          <p>
-            Name: {retrievedResumeById.first_name}{" "}
-            {retrievedResumeById.last_name}
-          </p>
-          <p>Job Title: {retrievedResumeById.job_title}</p>
-          <p>Job Description: {retrievedResumeById.job_description}</p>
-          <p>Job Company: {retrievedResumeById.job_company}</p>
-        </div>
-      )}
-      {retrievedResumesByName.length > 0 && (
-        <div>
-          <h2>Resumes Found:</h2>
-          {retrievedResumesByName.map((resume) => (
+          {retrievedResumes.map((resume) => (
             <div key={resume.id}>
               <p>
                 Name: {resume.first_name} {resume.last_name}
@@ -95,13 +83,13 @@ const RetrieveResume = () => {
               <p>Job Title: {resume.job_title}</p>
               <p>Job Description: {resume.job_description}</p>
               <p>Job Company: {resume.job_company}</p>
-              <p>---------------------------------------------------</p>
+              {retrievedResumes.length > 1 && <hr />}
             </div>
           ))}
         </div>
       )}
     </div>
   );
-}
+};
 
 export default RetrieveResume;
