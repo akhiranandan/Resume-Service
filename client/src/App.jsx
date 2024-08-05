@@ -3,6 +3,7 @@ import axios from "axios";
 import "./App.css";
 import Input from "./components/Input";
 import RetrieveResume from "./components/RetrieveResume";
+import { useForm } from "react-hook-form";
 
 const App = () => {
   const initialResumeDetails = {
@@ -12,9 +13,12 @@ const App = () => {
     job_company: "",
   };
 
-  const [resumeDetails, setResumeDetails] = useState(initialResumeDetails);
   const [displayId, setDisplayId] = useState("");
   const [error, setError] = useState("");
+
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: initialResumeDetails,
+  });
 
   const fields = [
     { name: "name", label: "Name", isRequired: true },
@@ -23,30 +27,22 @@ const App = () => {
     { name: "job_company", label: "Job Company", isRequired: true },
   ];
 
-  const handleChange = (e) => {
-    setResumeDetails({ ...resumeDetails, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!resumeDetails.name || !resumeDetails.job_title || !resumeDetails.job_description || !resumeDetails.job_company) {
-      alert("Please fill all the required fields.");
-      return;
-    }
+  const onSubmit = async (data) => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/uploadResumeDetails",
-        resumeDetails
+        data
       );
       setDisplayId(response.data.resume_id);
       setError("");
+      reset();
     } catch (error) {
       setError("Error uploading resume: " + error.message);
     }
   };
 
   const handleClear = () => {
-    setResumeDetails(initialResumeDetails);
+    reset();
     setDisplayId("");
     setError("");
   };
@@ -54,27 +50,28 @@ const App = () => {
   return (
     <div>
       <h1>Upload Resume</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {fields.map((item) => (
           <Input
             key={item.name}
             label={item.label}
-            value={resumeDetails[item.name]}
             name={item.name}
-            handleChange={handleChange}
+            register={register}
+            isRequired={item.isRequired}
           />
         ))}
         <button type="submit">Submit</button>
-        <button type="button" onClick={handleClear}>Clear</button>
+        <button type="button" onClick={handleClear}>
+          Clear
+        </button>
       </form>
 
       {error && <p className="error">{error}</p>}
       {displayId && <p>Your Resume ID is: {displayId}</p>}
 
-      <RetrieveResume/>
-
+      <RetrieveResume />
     </div>
   );
-}
+};
 
 export default App;
