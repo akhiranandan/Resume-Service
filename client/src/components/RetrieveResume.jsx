@@ -1,30 +1,30 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 
 const RetrieveResume = () => {
-  const [resumeId, setResumeId] = useState("");
-  const [searchName, setSearchName] = useState("");
   const [retrievedResumes, setRetrievedResumes] = useState([]);
+  const { register, handleSubmit, reset } = useForm();
 
-  const handleSearchById = async (e) => {
-    e.preventDefault();
+  const handleSearchById = async (data) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/getResumeById/${resumeId}`
+        `http://localhost:8080/api/getResumeById/${data.resumeId}`
       );
       setRetrievedResumes([response.data]);
+      reset();
     } catch (error) {
       console.error("Error retrieving resume:", error);
     }
   };
 
-  const handleSearchByName = async (e) => {
-    e.preventDefault();
+  const handleSearchByName = async (data) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/getResumeByName/${encodeURIComponent(searchName)}`
+        `http://localhost:8080/api/getResumeByName/${encodeURIComponent(data.searchName)}`
       );
       setRetrievedResumes(response.data);
+      reset();
     } catch (error) {
       console.error("Error retrieving resumes:", error);
     }
@@ -33,15 +33,13 @@ const RetrieveResume = () => {
   const inputFields = [
     {
       label: "Resume ID:",
-      value: resumeId,
-      onChange: (e) => setResumeId(e.target.value),
+      name: "resumeId",
       onSubmit: handleSearchById,
       submit: "Retrieve Resume Details",
     },
     {
       label: "Resume Name:",
-      value: searchName,
-      onChange: (e) => setSearchName(e.target.value),
+      name: "searchName",
       onSubmit: handleSearchByName,
       submit: "Retrieve Resume Details",
     },
@@ -54,13 +52,12 @@ const RetrieveResume = () => {
       <div className="search-resume">
         {inputFields.map((item, index) => (
           <div key={index}>
-            <form onSubmit={item.onSubmit}>
+            <form onSubmit={handleSubmit(item.onSubmit)}>
               <div>
                 <label>{item.label}</label>
                 <input
                   type="text"
-                  value={item.value}
-                  onChange={item.onChange}
+                  {...register(item.name)}
                 />
               </div>
               <button type="submit">{item.submit}</button>
