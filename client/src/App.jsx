@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
-import Input from "./components/Input";
 import RetrieveResume from "./components/RetrieveResume";
+import { useForm } from "react-hook-form";
 
 const App = () => {
   const initialResumeDetails = {
@@ -12,7 +12,6 @@ const App = () => {
     job_company: "",
   };
 
-  const [resumeDetails, setResumeDetails] = useState(initialResumeDetails);
   const [displayId, setDisplayId] = useState("");
   const [error, setError] = useState("");
 
@@ -23,56 +22,125 @@ const App = () => {
     { name: "job_company", label: "Job Company", isRequired: true },
   ];
 
-  const handleChange = (e) => {
-    setResumeDetails({ ...resumeDetails, [e.target.name]: e.target.value });
+  const onSubmit = async (data) => {
+    const updatedFormData = { ...formData, ...data };
+    setFormData(updatedFormData);
+  
+    if (currentStep < fields.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/api/uploadResumeDetails",
+          updatedFormData 
+        );
+        setDisplayId(response.data.resume_id);
+        setError("");
+        reset(); 
+      } catch (error) {
+        setError("Error uploading resume: " + error.message);
+      }
+    }
   };
+  
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!resumeDetails.name || !resumeDetails.job_title || !resumeDetails.job_description || !resumeDetails.job_company) {
-      alert("Please fill all the required fields.");
-      return;
-    }
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/api/uploadResumeDetails",
-        resumeDetails
-      );
-      setDisplayId(response.data.resume_id);
-      setError("");
-    } catch (error) {
-      setError("Error uploading resume: " + error.message);
-    }
-  };
+//   const handleClear = () => {
+//     reset();
+//     setDisplayId("");
+//     setError("");
+//   };
+
+//   return (
+//     <div>
+//       <h1>Upload Resume</h1>
+//       <form onSubmit={handleSubmit(onSubmit)}>
+//         {fields.map((item) => (
+//           <Input
+//             key={item.name}
+//             label={item.label}
+//             name={item.name}
+//             register={register}
+//             isRequired={item.isRequired}
+//           />
+//         ))}
+//         <button type="submit">Submit</button>
+//         <button type="button" onClick={handleClear}>
+//           Clear
+//         </button>
+//       </form>
+
+//       {error && <p className="error">{error}</p>}
+//       {displayId && <p>Your Resume ID is: {displayId}</p>}
+
+//       <RetrieveResume />
+//     </div>
+//   );
+// };
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+        defaultValues: initialResumeDetails,
+      });
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState({});
+
+
 
   const handleClear = () => {
-    setResumeDetails(initialResumeDetails);
-    setDisplayId("");
-    setError("");
+    reset();
+    setFormData({});
+    setCurrentStep(0);
+  };
+
+  const goToPreviousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   return (
     <div>
-      <h1>Upload Resume</h1>
-      <form onSubmit={handleSubmit}>
-        {fields.map((item) => (
-          <Input
-            key={item.name}
-            label={item.label}
-            value={resumeDetails[item.name]}
-            name={item.name}
-            handleChange={handleChange}
-          />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {fields.slice(currentStep, currentStep + 1).map((item) => (
+          <div key={item.name}>
+            <label>{item.label}</label>
+            <input
+              {...register(item.name, { required: item.isRequired })}
+              defaultValue={formData[item.name] || ""}
+            />
+            {errors[item.name] && <p>{item.label} is required</p>}
+          </div>
         ))}
-        <button type="submit">Submit</button>
-        <button type="button" onClick={handleClear}>Clear</button>
+        <div>
+          {currentStep > 0 && (
+            <button type="button" onClick={goToPreviousStep}>
+              Previous
+            </button>
+          )}
+          {currentStep < fields.length - 1 ? (
+            <button type="submit">Next</button>
+          ) : (
+            <button type="submit">Submit</button>
+          )}
+          <button type="button" onClick={handleClear}>
+            Clear
+          </button>
+        </div>
       </form>
 
-      {error && <p className="error">{error}</p>}
-      {displayId && <p>Your Resume ID is: {displayId}</p>}
+      {currentStep === fields.length && (
+        <div>
+          <h2>Submitted Data:</h2>
+          {Object.entries(formData).map(([key, value]) => (
+            <p key={key}>
+              {key}: {value}
+            </p>
+          ))}
+        </div>
+      )}
 
-      <RetrieveResume/>
-
+          {error && <p className="error">{error}</p>}
+           {displayId && <p>Your Resume ID is: {displayId}</p>}
+      <RetrieveResume />
     </div>
   );
 }
